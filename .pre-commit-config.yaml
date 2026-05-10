@@ -3,6 +3,7 @@ repos:
     rev: v1.105.0
     hooks:
       - id: terraform_trivy
+        stages: [push]
         args:
           - --args=--severity HIGH,CRITICAL
           - --args=--skip-dirs="**/.terraform"
