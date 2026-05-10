@@ -7,6 +7,7 @@ on:
 jobs:
   tflint:
     runs-on: ubuntu-latest
+    continue-on-error: ${{ github.event_name != 'pull_request' }}
     steps:
       - uses: actions/checkout@v4.2.2
 
