@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: ${{ github.event_name != 'pull_request' }}
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v6.0.2
 
-      - uses: terraform-linters/setup-tflint@v4.1.1
+      - uses: terraform-linters/setup-tflint@v6.2.2
         with:
           tflint_version: latest
 
