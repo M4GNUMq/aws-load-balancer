@@ -10,6 +10,23 @@ data "aws_ami" "load_balancer" {
   }
 }
 
+module "ec2_instance" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "6.4.0"
+
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  name                   = "load-balancer"
+  ami                    = data.aws_ami.load_balancer.id
+  vpc_security_group_ids = [aws_security_group.load_balancer.id]
+  user_data              = templatefile("${path.module}/initLB.sh", {
+    web_server_count = var.web_server_count
+  })
+
+  tags = {
+    Terraform = "true"
+  }
+}
 resource "aws_security_group" "load_balancer" {
   name        = "load_balancer"
   description = "Allow all outbound traffic and inbound traffic on ports 80, 443, and 22"
