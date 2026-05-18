@@ -22,25 +22,6 @@ data "aws_subnets" "public" {
   }
 }
 
-module "ec2_instance" {
-  source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "6.4.0"
-
-  instance_type               = var.instance_type
-  key_name                    = var.key_name
-  name                        = "load-balancer"
-  ami                         = data.aws_ami.load_balancer.id
-  subnet_id                   = data.aws_subnets.public.ids[0]
-  associate_public_ip_address = true
-  vpc_security_group_ids      = [aws_security_group.load_balancer.id]
-  user_data                   = templatefile("${path.module}/initLB.sh", {
-    web_server_count = var.web_server_count
-  })
-
-  tags = {
-    Terraform = "true"
-  }
-}
 resource "aws_security_group" "load_balancer" {
   name        = "load_balancer"
   description = "Allow all outbound traffic and inbound traffic on ports 80, 443, and 22"
@@ -75,4 +56,24 @@ resource "aws_vpc_security_group_egress_rule" "all" {
   security_group_id = aws_security_group.load_balancer.id
   ip_protocol       = "-1"
   cidr_ipv4         = "0.0.0.0/0"
+}
+
+module "ec2_instance" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "6.4.0"
+
+  instance_type               = var.instance_type
+  key_name                    = var.key_name
+  name                        = "load-balancer"
+  ami                         = data.aws_ami.load_balancer.id
+  subnet_id                   = data.aws_subnets.public.ids[0]
+  associate_public_ip_address = true
+  vpc_security_group_ids      = [aws_security_group.load_balancer.id]
+  user_data = templatefile("${path.module}/initLB.sh", {
+    web_server_count = var.web_server_count
+  })
+
+  tags = {
+    Terraform = "true"
+  }
 }
