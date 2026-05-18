@@ -9,3 +9,4 @@ repos:
         args:
           - --args=--severity HIGH,CRITICAL
           - --args=--skip-dirs="**/.terraform"
+          
