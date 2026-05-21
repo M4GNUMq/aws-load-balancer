@@ -69,7 +69,7 @@ module "ec2_instance" {
   subnet_id                   = data.aws_subnets.public.ids[0]
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.load_balancer.id]
-  user_data = templatefile("${path.module}/initLB.sh", {
+  user_data = templatefile("${path.module}/user_data.sh", {
     web_server_count = var.web_server_count
   })
 
