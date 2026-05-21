@@ -20,3 +20,8 @@ variable "web_server_count" {
   type        = number
   default     = 2
 }
+
+variable "ssh_allowed_cidr" {
+  description = "CIDR block allowed to SSH into the instance"
+  type        = string
+}
