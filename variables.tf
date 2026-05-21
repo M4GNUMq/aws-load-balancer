@@ -25,3 +25,9 @@ variable "ssh_allowed_cidr" {
   description = "CIDR block allowed to SSH into the instance"
   type        = string
 }
+
+variable "vpc_id" {
+  description = "VPC ID to deploy resources into"
+  type        = string
+  default     = "vpc-0a86b5aeb59d541df"
+}

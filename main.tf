@@ -14,7 +14,7 @@ data "aws_ami" "load_balancer" {
 data "aws_subnets" "public" {
   filter {
     name   = "vpc-id"
-    values = ["vpc-0a86b5aeb59d541df"]
+    values = [var.vpc_id]
   }
   filter {
     name   = "map-public-ip-on-launch"
@@ -25,7 +25,7 @@ data "aws_subnets" "public" {
 resource "aws_security_group" "load_balancer" {
   name        = "load_balancer"
   description = "Allow all outbound traffic and inbound traffic on ports 80, 443, and 22"
-  vpc_id      = "vpc-0a86b5aeb59d541df"
+  vpc_id      = var.vpc_id
 }
 
 resource "aws_vpc_security_group_ingress_rule" "http" {
