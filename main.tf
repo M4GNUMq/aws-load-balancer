@@ -70,6 +70,7 @@ module "ec2_instance" {
   key_name                    = var.key_name
   name                        = "load-balancer"
   ami                         = data.aws_ami.load_balancer.id
+  ami_ssm_parameter           = null
   subnet_id                   = data.aws_subnets.public.ids[0]
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.load_balancer.id]
