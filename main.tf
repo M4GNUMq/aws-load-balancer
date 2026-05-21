@@ -77,9 +77,9 @@ module "ec2_instance" {
     web_server_count = var.web_server_count
   })
 
-  root_block_device = [{
+  root_block_device = {
     encrypted = true
-  }]
+  }
 
   tags = {
     Terraform = "true"
