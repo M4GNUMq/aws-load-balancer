@@ -36,19 +36,25 @@ pre-commit install
 pre-commit run --all-files
 ```
 
-## Required Variables
+## Variables
 
 Two variables have no defaults and must be supplied at plan/apply time:
 - `key_name` — name of an existing EC2 key pair for SSH access
 - `ssh_allowed_cidr` — your IP in CIDR notation (e.g. `1.2.3.4/32`)
 
+Variables with defaults:
+- `aws_region` — defaults to `il-central-1`
+- `instance_type` — defaults to `t3.micro`
+- `web_server_count` — defaults to `2`
+- `vpc_id` — defaults to a hardcoded VPC ID specific to `il-central-1`; override if deploying to a different region
+
 ## Architecture
 
-**Providers & versions** — `terraform.tf` pins Terraform `>= 1.2` and AWS provider `~> 6.37`.
+**Providers & versions** — `terraform.tf` pins Terraform `>= 1.2` and AWS provider `~> 6.37`. No remote state backend is configured; state is stored locally.
 
-**EC2 instance** — `main.tf` uses the `terraform-aws-modules/ec2-instance/aws` module (v6.4.0). The AMI is resolved via a `data.aws_ami` filter for the latest Amazon Linux 2 (`amzn2-ami-hvm-*-x86_64-gp2`). The subnet is resolved dynamically via `data.aws_subnets` filtering the default VPC for subnets with `map-public-ip-on-launch = true`.
+**EC2 instance** — `main.tf` uses the `terraform-aws-modules/ec2-instance/aws` module (v6.4.0). The AMI is resolved via a `data.aws_ami` filter for the latest Amazon Linux 2 (`amzn2-ami-hvm-*-x86_64-gp2`). The subnet is resolved dynamically via `data.aws_subnets` filtering by `var.vpc_id` for subnets with `map-public-ip-on-launch = true`.
 
-**User data** — `user_data.sh` is rendered via `templatefile()` with the `web_server_count` variable injected. At boot it installs Docker, starts `web_server_count` nginx containers on ports `8001+`, then generates an nginx upstream config and starts a load balancer container in host-network mode on port 80. Shell variables inside `user_data.sh` use `$$` (double dollar) to prevent Terraform from interpreting them as template expressions.
+**User data** — `user_data.sh` is rendered via `templatefile()` with the `web_server_count` variable injected. At boot it installs Docker, starts `web_server_count` nginx containers on ports `8001..800N` (BASE_PORT=8000, ports are BASE_PORT+i), then generates an nginx upstream config and starts a load balancer container in host-network mode on port 80. Shell variables inside `user_data.sh` use `$$` (double dollar) to prevent Terraform from interpreting them as template expressions.
 
 **Security group** — separate `aws_vpc_security_group_ingress_rule` / `aws_vpc_security_group_egress_rule` resources (not inline rules) for HTTP (80), HTTPS (443), SSH (22 from `ssh_allowed_cidr`), and all egress.
 
