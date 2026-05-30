@@ -1,0 +1,5 @@
+# Public-facing load balancer — HTTP and HTTPS open to internet
+AVD-AWS-0107
+
+# EC2 needs outbound internet access to pull Docker images
+AVD-AWS-0104

@@ -1,0 +1,22 @@
+name: tflint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tflint:
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ github.event_name != 'pull_request' }}
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - uses: terraform-linters/setup-tflint@v6.2.1
+        with:
+          tflint_version: latest
+
+      - name: Init tflint
+        run: tflint --init
+
+      - name: Run tflint
+        run: tflint --recursive
